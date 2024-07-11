@@ -10,7 +10,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost/sudoku', { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect('mongodb://localhost/sudoku', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://iaiahmadov:sK4GzobneNJPiCo5@sudoku.plcfgck.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true });
 
 const scoreSchema = new mongoose.Schema({
     username: String,
