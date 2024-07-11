@@ -19,20 +19,92 @@ const scoreSchema = new mongoose.Schema({
 
 const Score = mongoose.model('Score', scoreSchema);
 
+// Function to generate a Sudoku puzzle
+
+// Function to generate a Sudoku puzzle
+function generateSudoku() {
+    const grid = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+
+    // Function to check if placing a number is valid
+    function isValid(grid, row, col, num) {
+        // Check row
+        for (let c = 0; c < 9; c++) {
+            if (grid[row][c] === num) {
+                return false;
+            }
+        }
+        // Check column
+        for (let r = 0; r < 9; r++) {
+            if (grid[r][col] === num) {
+                return false;
+            }
+        }
+        // Check 3x3 sub-grid
+        const startRow = Math.floor(row / 3) * 3;
+        const startCol = Math.floor(col / 3) * 3;
+        for (let r = startRow; r < startRow + 3; r++) {
+            for (let c = startCol; c < startCol + 3; c++) {
+                if (grid[r][c] === num) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Function to solve Sudoku using backtracking
+    function solveSudoku(grid) {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (grid[row][col] === 0) {
+                    for (let num = 1; num <= 9; num++) {
+                        if (isValid(grid, row, col, num)) {
+                            grid[row][col] = num;
+                            if (solveSudoku(grid)) {
+                                return true;
+                            }
+                            grid[row][col] = 0;
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Generate a fully solved Sudoku puzzle
+    solveSudoku(grid);
+
+    // Randomly remove numbers to create a puzzle (remove approximately 40 numbers)
+    let emptyCells = 40; // Adjust this number for difficulty
+    while (emptyCells > 0) {
+        const row = Math.floor(Math.random() * 9);
+        const col = Math.floor(Math.random() * 9);
+        if (grid[row][col] !== 0) {
+            grid[row][col] = 0;
+            emptyCells--;
+        }
+    }
+
+    return grid;
+}
+
+
 // Generate Sudoku puzzle (dummy implementation)
 app.get('/generate-puzzle', (req, res) => {
     // Dummy Sudoku puzzle
-    const puzzle = [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9],
-    ];
+    const puzzle = generateSudoku();
 
     res.json({ puzzle });
 });
